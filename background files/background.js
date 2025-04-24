@@ -17,28 +17,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   return true;
 });
 
-// Add the onUpdated listener only once
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (tabId === activeTabId && changeInfo.status === "complete") {
     setTimeout(() => {
-      chrome.tabs.sendMessage(
-        tabId,
-        { send: "tabCreated" },
-        function (response) {
-          if (chrome.runtime.lastError) {
-            console.log(
-              "Error sending message:",
-              chrome.runtime.lastError.message
-            );
-          } else {
-            console.log("Message sent successfully");
-          }
-        }
-      );
+      chrome.tabs.sendMessage(tabId, { send: "tabCreated" });
       runYouTubeAutomation();
     }, 1000);
 
-    // Optional: reset activeTabId to prevent repeated execution
     activeTabId = null;
   }
 });
