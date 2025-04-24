@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Background Circle -->
+  <circle cx="64" cy="64" r="60" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+  
+  <!-- YouTube Play Button Shape (Red) -->
+  <path d="M64 32C45.2 32 30 47.2 30 66C30 84.8 45.2 100 64 100C82.8 100 98 84.8 98 66C98 47.2 82.8 32 64 32Z" fill="#FF0000"/>
+  
+  <!-- Inner Play Button (White) -->
+  <polygon points="56,52 56,80 80,66" fill="white"/>
+  
+  <!-- Automation Gear (Blue) -->
+  <g transform="translate(80, 30) scale(0.6)">
+    <circle cx="0" cy="0" r="18" fill="#3B82F6"/>
+    <path d="M0-14v-8M10-10l4-7M14 0h8M10 10l4 7M0 14v8M-10 10l-4 7M-14 0h-8M-10-10l-4-7" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="6" fill="white"/>
+  </g>
+  
+  <!-- Second Automation Gear (Blue, Smaller) -->
+  <g transform="translate(92, 45) scale(0.4)">
+    <circle cx="0" cy="0" r="18" fill="#1D4ED8"/>
+    <path d="M0-14v-8M10-10l4-7M14 0h8M10 10l4 7M0 14v8M-10 10l-4 7M-14 0h-8M-10-10l-4-7" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="6" fill="white"/>
+  </g>
+</svg> 

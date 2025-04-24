@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Automation",
+  "version": "1.0",
+  "description": "Like & Subscribe in just one Click",
+  "icons": {
+    "16": "images/icon.png",
+    "48": "images/icon.png",
+    "128": "images/icon.png"
+  },
+  "action": {
+    "default_popup": "content scripts/popup.html",
+    "default_icon": "images/icon.png"
+  },
+  "background": {
+    "service_worker": "background files/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "permissions": ["activeTab"]
+}
