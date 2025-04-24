@@ -1,35 +1,48 @@
 console.log("YouTube Automation content script loaded");
 
-// Wait for the DOM to be fully loaded
-console.log("DOM fully loaded");
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  console.log(message);
+  console.log("Received message:", message);
 
   if (message.send === "tabCreated") {
+    // Wait for the thumbnails to render
     await delay(3000);
-
-    const videoElement = document.querySelectorAll(
-      "#content ytd-thumbnail yt-image"
-    );
-
-    if (videoElement.length > 0) {
-      videoElement[1].click();
+    const videos = document.querySelectorAll("#content ytd-thumbnail yt-image");
+    if (videos[1]) {
+      videos[1].click();
     } else {
       console.log("Video element not found");
+      return;
     }
   }
-  console.log("now time to subscribe");
-  clickSub();
+
+  // Give the page time to load the subscribe button
+  await delay(5000);
+  console.log("Now time to subscribe");
+  clickSubAndLike();
 });
-const delay = function (ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-function clickSub() {
-  const sub = document.querySelector(
-    ".yt-spec-button-shape-next__button-text-content"
+
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+function clickSubAndLike() {
+  const subButton = document.querySelector(
+    "ytd-subscribe-button-renderer button"
   );
-  console.log(sub);
-  sub.click();
+
+  if (!subButton) {
+    console.log("Subscribe button not found or already subscribed");
+  } else {
+    console.log("Found subscribe button:", subButton);
+    subButton.click();
+  }
+
+  const likeButton = document.querySelector("like-button-view-model button");
+
+  if (!likeButton) {
+    console.log("Like button not found or already liked");
+  } else {
+    console.log("Found like button:", likeButton);
+    likeButton.click();
+  }
 }
 
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
