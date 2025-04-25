@@ -1,48 +1,63 @@
 console.log("YouTube Automation content script loaded");
 
+const videoThumbnail = "#content ytd-thumbnail yt-image";
+const isSubscribed = "ytd-subscribe-button-renderer button span";
+const subButton = "ytd-subscribe-button-renderer button ";
+const likeBtn = "like-button-view-model button";
+const likedButton = "button-view-model button";
+
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log("Received message:", message);
 
   if (message.send === "tabCreated") {
     // Wait for the thumbnails to render
     await delay(3000);
-    const videos = document.querySelectorAll("#content ytd-thumbnail yt-image");
-    if (videos[1]) {
-      videos[1].click();
+    const videos = document.querySelectorAll(videoThumbnail);
+    if (videos[0]) {
+      videos[0].click();
     } else {
       console.log("Video element not found");
       return;
     }
   }
 
-  // Give the page time to load the subscribe button
   await delay(5000);
-  console.log("Now time to subscribe");
   clickSubAndLike();
 });
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 function clickSubAndLike() {
-  const subButton = document.querySelector(
-    "ytd-subscribe-button-renderer button"
-  );
-
-  if (!subButton) {
+  const subButtonElement = document.querySelector(subButton);
+  const subscribed = document.querySelector(isSubscribed);
+  if (!subButtonElement) {
     console.log("Subscribe button not found or already subscribed");
   } else {
-    console.log("Found subscribe button:", subButton);
-    subButton.click();
+    if (subscribed && subscribed.innerHTML === "Subscribed") {
+      console.log("Already Subscribed: " + subscribed.innerHTML);
+    } else {
+      console.log("Found subscribe button:", subButtonElement);
+      subButtonElement.click();
+    }
   }
 
-  const likeButton = document.querySelector("like-button-view-model button");
-
-  if (!likeButton) {
+  const likeBtnElement = document.querySelector(likeBtn);
+  const likedBtn = document.querySelector(likedButton);
+  if (!likeBtnElement) {
     console.log("Like button not found or already liked");
   } else {
-    console.log("Found like button:", likeButton);
-    likeButton.click();
+    if (likeBtn && likeBtn.title === "I like this") {
+      console.log("Already Subscribed:" + likeBtn.title);
+    } else {
+      likeBtnElement.click();
+    }
   }
 }
 
+// function likeVideo() {
+//   let likeBtn = document.querySelector("sdodos");
+//   if (!likeBtn) return false;
+//   likeBtn.click();
+//   return true;
+// }
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
