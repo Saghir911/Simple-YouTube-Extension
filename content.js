@@ -33,6 +33,7 @@ function clickSubAndLike() {
   } else {
     console.log("Found subscribe button:", subButton);
     subButton.click();
+    console.log(subButton.innerHTML);
   }
 
   const likeButton = document.querySelector("like-button-view-model button");
@@ -46,3 +47,10 @@ function clickSubAndLike() {
 }
 
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
+
+let subscribed = document.querySelector("yt-core-attributed-string");
+if (subscribed.innerHTML === "Subscribed" || subscribed.attributes.role === "subscribed") {
+  console.log("subscribed: already subscribed hay");
+} else {
+  console.log("subscribe karo");
+}
