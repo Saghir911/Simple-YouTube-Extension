@@ -53,7 +53,7 @@ function clickSubAndLike() {
     }
   }
 }
-
+// todo tayyab suggested:-
 // function likeVideo() {
 //   let likeBtn = document.querySelector("sdodos");
 //   if (!likeBtn) return false;
