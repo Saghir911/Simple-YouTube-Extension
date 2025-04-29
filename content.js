@@ -1,70 +1,75 @@
 console.log("YouTube Automation content script loaded");
 
-const videoThumbnail = "#content ytd-thumbnail yt-image";
-const isSubscribed = "ytd-subscribe-button-renderer button span";
-const subButton = "ytd-subscribe-button-renderer button ";
-const likeBtn = "like-button-view-model button";
-const likedButton = "button-view-model button";
+const S = {
+  thumbnail: "#content ytd-thumbnail yt-image",
+  subscribeBtn: "ytd-subscribe-button-renderer button",
+  subscribeSpan: "ytd-subscribe-button-renderer button span",
+  likeBtn: "like-button-view-model button",
+};
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  console.log("Received message:", message);
+let homeHandled = false;
+let videoHandled = false;
+let clickDone = false;
 
-  if (message.send === "tabCreated") {
-    // Wait for the thumbnails to render
-    await delay(3000);
-    const videos = document.querySelectorAll(videoThumbnail);
-    if (videos[0]) {
-      videos[0].click();
-    } else {
-      console.log("Video element not found");
-      return;
-    }
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  console.log("Received:", msg.action);
+
+  if (msg.action === "handleHomePage" && !homeHandled) {
+    homeHandled = true;
+    setTimeout(() => {
+      const vid = document.querySelector(S.thumbnail);
+      if (vid) {
+        console.log("Clicking first thumbnail…");
+        vid.click();
+      } else {
+        console.warn("No video thumbnail found");
+      }
+    }, 5000); 
+    sendResponse({ status: "homepage queued" });
   }
 
-  await delay(5000);
-  clickSubAndLike();
+  if (msg.action === "handleVideoPage" && !videoHandled) {
+    videoHandled = true;
+    setTimeout(clickSubAndLike, 3000); 
+    sendResponse({ status: "video page queued" });
+  }
+
+  return true;
 });
 
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
 function clickSubAndLike() {
-  const subButtonElement = document.querySelector(subButton);
-  const subscribed = document.querySelector(isSubscribed);
-  if (!subButtonElement) {
-    console.log("Subscribe button not found or already subscribed");
+  if (clickDone) {
+    console.log("Already processed this video—skipping.");
+    return;
+  }
+  clickDone = true;
+  console.log("Processing subscribe & like…");
+
+  // Subscribe
+  const btn = document.querySelector(S.subscribeBtn);
+  const span = document.querySelector(S.subscribeSpan);
+  if (btn && span && !/subscribed/i.test(span.textContent.trim())) {
+    console.log("→ Subscribing");
+    btn.click();
   } else {
-    if (subscribed && subscribed.innerHTML === "Subscribed") {
-      console.log("Already Subscribed: " + subscribed.innerHTML);
-    } else {
-      console.log("Found subscribe button:", subButtonElement);
-      subButtonElement.click();
-    }
+    console.log("→ Already subscribed or button missing");
   }
 
-  const likeBtnElement = document.querySelector(likeBtn);
-  const likedBtn = document.querySelector(likedButton);
-  if (!likeBtnElement) {
-    console.log("Like button not found or already liked");
+  // Like
+  const like = document.querySelector(S.likeBtn);
+  if (like && like.getAttribute("aria-pressed") !== "true") {
+    console.log("→ Liking");
+    like.click();
   } else {
-    if (likeBtn && likeBtn.title === "I like this") {
-      console.log("Already Subscribed:" + likeBtn.title);
-    } else {
-      likeBtnElement.click();
-    }
+    console.log("→ Already liked or button missing");
   }
+
+  // Close after 5s to let YouTube register clicks
+  setTimeout(() => {
+    console.log("Telling background to close tab");
+    chrome.runtime.sendMessage({ action: "closeTab" });
+  }, 3000);
 }
-// todo tayyab suggested:-
-// function likeVideo() {
-//   let likeBtn = document.querySelector("sdodos");
-//   if (!likeBtn) return false;
-//   likeBtn.click();
-//   return true;
-// }
+
+// Notify background that content script is injected
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
-
-let subscribed = document.querySelector("yt-core-attributed-string");
-if (subscribed.innerHTML === "Subscribed" || subscribed.attributes.role === "subscribed") {
-  console.log("subscribed: already subscribed hay");
-} else {
-  console.log("subscribe karo");
-}
