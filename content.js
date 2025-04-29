@@ -61,3 +61,10 @@ function clickSubAndLike() {
 //   return true;
 // }
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
+
+let subscribed = document.querySelector("yt-core-attributed-string");
+if (subscribed.innerHTML === "Subscribed" || subscribed.attributes.role === "subscribed") {
+  console.log("subscribed: already subscribed hay");
+} else {
+  console.log("subscribe karo");
+}
