@@ -5,7 +5,8 @@ const S = {
   subscribeBtn: "ytd-subscribe-button-renderer button",
   subscribeSpan: "ytd-subscribe-button-renderer button span",
   likeBtn: "like-button-view-model button",
-  inputComment: "#contenteditable-root",
+  inputComment: "#placeholder-area",
+  inputValue: "#contenteditable-root",
   commentBtn: "yt-button-shape button",
 };
 
@@ -66,19 +67,30 @@ function clickSubAndLike() {
     console.log("→ Already liked or button missing");
   }
 
+  setTimeout(() => {
+    customComment();
+  }, 5000);
+
+ 
+}
+
+function customComment() {
   //comment
   const inputComment = document.querySelector(S.inputComment);
   const commentBtn = document.querySelector(S.commentBtn);
-  // if(window.document.style.overflow){
-  //   console.log("its overflow");
-  //   window.scrollY(20)
-  // }
-  if (inputComment) {
-    console.log(inputComment+"found it");
-    inputComment.click();
-    inputComment.innerText = "Great Video";
+  const inputValue = document.querySelector(S.inputValue);
+  const overflowStyle = window.getComputedStyle(
+    document.documentElement
+  ).overflow;
+  if (overflowStyle === "hidden" || overflowStyle === "scroll") {
+    console.log("Overflow detected");
+    window.scrollY(0, 20); // Scrolls down 20 pixels
   }
-  else{
+  if (inputComment) {
+    console.log(inputComment + "found it");
+    inputComment.click();
+    inputValue.innerText = "Great Video 👍";
+  } else {
     console.log("Page is not compeltey loaded");
   }
   if (commentBtn && commentBtn.getAttribute("aria-label") === "Comment") {
@@ -87,13 +99,16 @@ function clickSubAndLike() {
   } else {
     console.log("→ Comment button missing or aria-label is not 'Comment'");
   }
+}
 
+function closeTab(){
   // Close after 5s to let YouTube register clicks
   setTimeout(() => {
     console.log("Telling background to close tab");
     chrome.runtime.sendMessage({ action: "closeTab" });
-  }, 7000);
+  }, 10000);
 }
+
 
 // Notify background that content script is injected
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
