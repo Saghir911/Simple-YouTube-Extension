@@ -135,16 +135,7 @@ async function scrollToComments() {
     await wait(500);
   }
 
-  // // Find comment section for more targeted scrolling
-  // const commentsSection = document.querySelector("#comments");
-  // if (commentsSection) {
-  //   commentsSection.scrollIntoView({ behavior: "smooth", block: "center" });
-  //   console.log("Comments section found and scrolled to");
-  // } else {
-  //   console.log("Comments section not found, using general scroll");
-  // }
-
-  // await wait(2000); // Wait for scroll to complete
+ 
 }
 
 // Add a comment to the video
@@ -166,21 +157,11 @@ async function customComment() {
         inputValue.innerText = "Great Video 👍";
 
         // Dispatch input event to trigger the comment button
-        inputValue.dispatchEvent(new Event("input", { bubbles: true }));
+        // inputValue.dispatchEvent(new Event("input", { bubbles: true }));
         await wait(1500);
 
         // Find and click the comment button
-        const commentBtns = document.querySelectorAll(S.commentBtn);
-        let commentBtn = null;
-
-        // Find button with "Comment" aria-label
-        for (const btn of commentBtns) {
-          if (btn.getAttribute("aria-label") === "Comment") {
-            commentBtn = btn;
-            break;
-          }
-        }
-
+        const commentBtn = document.querySelector(S.commentBtn)
         if (commentBtn) {
           console.log("→ Submitting comment");
           commentBtn.click();
@@ -205,19 +186,4 @@ async function closeTab() {
   chrome.runtime.sendMessage({ action: "closeTab" });
 }
 
-// Auto-start based on URL
-(function autoStart() {
-  console.log("Checking page type for auto-start...");
 
-  // Notify background that content script is ready
-  chrome.runtime.sendMessage({ action: "contentScriptReady" });
-
-  // Auto-detect if we're on a video page
-  if (window.location.href.includes("youtube.com/watch")) {
-    console.log("Detected video page, auto-starting processing");
-    videoHandled = true;
-    setTimeout(() => processVideoPage(), 2000);
-  } else {
-    console.log("Detected home/browse page, waiting for command");
-  }
-})();
