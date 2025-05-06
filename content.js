@@ -130,21 +130,21 @@ async function scrollToComments() {
   console.log("Scrolling to comments section...");
 
   // Scroll down in increments
-  for (let i = 0; i < 5; i++) {
-    window.scrollBy(0, 5);
+  for (let i = 0; i < 3; i++) {
+    window.scrollBy(0, 100);
     await wait(500);
   }
 
-  // Find comment section for more targeted scrolling
-  const commentsSection = document.querySelector("#comments");
-  if (commentsSection) {
-    commentsSection.scrollIntoView({ behavior: "smooth", block: "center" });
-    console.log("Comments section found and scrolled to");
-  } else {
-    console.log("Comments section not found, using general scroll");
-  }
+  // // Find comment section for more targeted scrolling
+  // const commentsSection = document.querySelector("#comments");
+  // if (commentsSection) {
+  //   commentsSection.scrollIntoView({ behavior: "smooth", block: "center" });
+  //   console.log("Comments section found and scrolled to");
+  // } else {
+  //   console.log("Comments section not found, using general scroll");
+  // }
 
-  await wait(2000); // Wait for scroll to complete
+  // await wait(2000); // Wait for scroll to complete
 }
 
 // Add a comment to the video
