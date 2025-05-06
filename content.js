@@ -131,7 +131,7 @@ async function scrollToComments() {
 
   // Scroll down in increments
   for (let i = 0; i < 5; i++) {
-    window.scrollBy(0, 300);
+    window.scrollBy(0, 5);
     await wait(500);
   }
 
