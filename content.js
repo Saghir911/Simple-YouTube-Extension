@@ -1,3 +1,4 @@
+chrome.runtime.sendMessage({ action: "contentScriptReady" });
 console.log("YouTube Automation content script loaded");
 
 // Original selectors - keeping these as they were
@@ -15,6 +16,7 @@ const S = {
 let homeHandled = false;
 let videoHandled = false;
 let clickDone = false;
+let commentDone = false; // New flag to track if commenting has been done
 
 // Message listener from background script
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -50,11 +52,8 @@ async function clickFirstThumbnail() {
       console.log("Clicking first thumbnail...");
       vid.click();
 
-      // Wait for page load after clicking
-      await wait(5000);
-
-      // Now process the video page actions
-      processVideoPage();
+      // No longer calling processVideoPage() here
+      // The message handler will do that after navigation
     } else {
       console.warn("No video thumbnail found");
     }
@@ -75,11 +74,13 @@ async function processVideoPage() {
     // Scroll down to comments
     await scrollToComments();
 
-    // Add comment
-    await customComment();
+    // Add comment (only if not done yet)
+    if (!commentDone) {
+      await customComment();
+    }
 
     // Close tab after everything is done
-    await wait(3000);
+    await wait(5000);
     closeTab();
   } catch (error) {
     console.error("Error processing video page:", error);
@@ -134,12 +135,15 @@ async function scrollToComments() {
     window.scrollBy(0, 100);
     await wait(500);
   }
-
- 
 }
 
 // Add a comment to the video
 async function customComment() {
+  if (commentDone) {
+    console.log("Comment already added—skipping.");
+    return;
+  }
+
   try {
     console.log("Attempting to add comment...");
 
@@ -157,14 +161,25 @@ async function customComment() {
         inputValue.innerText = "Great Video 👍";
 
         // Dispatch input event to trigger the comment button
-        // inputValue.dispatchEvent(new Event("input", { bubbles: true }));
+        inputValue.dispatchEvent(new Event("input", { bubbles: true }));
         await wait(1500);
 
         // Find and click the comment button
-        const commentBtn = document.querySelector(S.commentBtn)
+        const commentBtns = document.querySelectorAll(S.commentBtn);
+        let commentBtn = null;
+
+        // Find button with "Comment" aria-label
+        for (const btn of commentBtns) {
+          if (btn.getAttribute("aria-label") === "Comment") {
+            commentBtn = btn;
+            break;
+          }
+        }
+
         if (commentBtn) {
           console.log("→ Submitting comment");
           commentBtn.click();
+          commentDone = true; // Mark comment as done
           await wait(3000); // Wait for comment to be posted
         } else {
           console.log("→ Comment button not found with aria-label 'Comment'");
@@ -185,5 +200,3 @@ async function closeTab() {
   console.log("Telling background to close tab");
   chrome.runtime.sendMessage({ action: "closeTab" });
 }
-
-

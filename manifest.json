@@ -21,6 +21,6 @@
       "js": ["content.js"]
     }
   ],
-  "permissions": ["activeTab", "scripting", "webNavigation", "storage"],
+  "permissions": ["activeTab", "scripting", "webNavigation", "storage", "tabs"],
   "host_permissions": ["https://www.youtube.com/*"]
 }
