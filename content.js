@@ -79,7 +79,7 @@ async function processVideoPage() {
 
     // Close tab after everything is done
     await wait(5000);
-    // closeTab();
+    closeTab();
   } catch (error) {
     console.error("Error processing video page:", error);
   }
@@ -157,6 +157,7 @@ async function customComment(aiComment) {
       if (inputValue) {
         console.log("Setting comment text...");
         inputValue.innerText = aiComment;
+        // todo: for custom comment use this line below 👇
         // inputValue.innerText = "Great Video 👍";
 
         // Dispatch input event to trigger the comment button
@@ -224,7 +225,10 @@ async function GetCommentText(videoUrl, prompt) {
     const data = await response.json();
     console.log(data);
 
-    let commentFromAi = data?.choices?.[0]?.message?.content;
+    let commentFromAi = (data?.choices?.[0]?.message?.content).replace(
+      /^"(.*)"$/,
+      "$1"
+    );
     if (commentFromAi) {
       console.log(`Comment Content is this: ${commentFromAi}`);
       await customComment(commentFromAi);
