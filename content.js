@@ -74,14 +74,12 @@ async function processVideoPage() {
     // Scroll down to comments
     await scrollToComments();
 
-    // Add comment (only if not done yet)
-    if (!commentDone) {
-      await customComment();
-    }
+    // Fetch & post the comment in one go
+    await GetCommentText(videoURL, cleanTitle);
 
     // Close tab after everything is done
     await wait(5000);
-    closeTab();
+    // closeTab();
   } catch (error) {
     console.error("Error processing video page:", error);
   }
@@ -138,7 +136,7 @@ async function scrollToComments() {
 }
 
 // Add a comment to the video
-async function customComment() {
+async function customComment(aiComment) {
   if (commentDone) {
     console.log("Comment already added—skipping.");
     return;
@@ -158,7 +156,8 @@ async function customComment() {
       const inputValue = document.querySelector(S.inputValue);
       if (inputValue) {
         console.log("Setting comment text...");
-        inputValue.innerText = "Great Video 👍";
+        inputValue.innerText = aiComment;
+        // inputValue.innerText = "Great Video 👍";
 
         // Dispatch input event to trigger the comment button
         inputValue.dispatchEvent(new Event("input", { bubbles: true }));
@@ -192,6 +191,48 @@ async function customComment() {
     }
   } catch (error) {
     console.error("Error adding comment:", error);
+  }
+}
+
+const cleanTitle = document.title.replace(" - YouTube", "").trim();
+const videoURL = window.location.href;
+async function GetCommentText(videoUrl, prompt) {
+  try {
+    console.log(videoUrl, prompt);
+
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Bearer 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",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "user",
+              content: `Generate a natural and engaging YouTube comment 10-15 words based on the given video title. The comment should sound like a real person, be relevant to the title, and feel authentic. Avoid generic AI-like responses. Here’s the video title: ${prompt}. Give only the comment as the output.`,
+            },
+          ],
+        }),
+      }
+    );
+
+    const data = await response.json();
+    console.log(data);
+
+    let commentFromAi = data?.choices?.[0]?.message?.content;
+    if (commentFromAi) {
+      console.log(`Comment Content is this: ${commentFromAi}`);
+      await customComment(commentFromAi);
+    } else {
+      console.warn("No comment returned from API");
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 

@@ -49,14 +49,26 @@ chrome.runtime.onMessage.addListener((request, sender) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (tabId === activeTabId && changeInfo.status === "complete" && contentScriptReadyTabs.has(tabId)) {
-    const action = tab.url.includes("/watch") ? "handleVideoPage" : tab.url.includes("youtube.com") ? "handleHomePage" : null;
+  if (
+    tabId === activeTabId &&
+    changeInfo.status === "complete" &&
+    contentScriptReadyTabs.has(tabId)
+  ) {
+    const action = tab.url.includes("/watch")
+      ? "handleVideoPage"
+      : tab.url.includes("youtube.com")
+      ? "handleHomePage"
+      : null;
     if (action) sendMessageToTab(tabId, action);
   }
 });
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  if (details.tabId === activeTabId && details.url.includes("/watch") && contentScriptReadyTabs.has(details.tabId)) {
+  if (
+    details.tabId === activeTabId &&
+    details.url.includes("/watch") &&
+    contentScriptReadyTabs.has(details.tabId)
+  ) {
     setTimeout(() => sendMessageToTab(details.tabId, "handleVideoPage"), 1000);
   }
 });
