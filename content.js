@@ -1,7 +1,6 @@
 chrome.runtime.sendMessage({ action: "contentScriptReady" });
 console.log("YouTube Automation content script loaded");
 
-// Original selectors - keeping these as they were
 const S = {
   thumbnail: "#content ytd-thumbnail yt-image",
   subscribeBtn: "ytd-subscribe-button-renderer button",
@@ -16,7 +15,7 @@ const S = {
 let homeHandled = false;
 let videoHandled = false;
 let clickDone = false;
-let commentDone = false; // New flag to track if commenting has been done
+let commentDone = false; 
 
 // Message listener from background script
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -51,9 +50,6 @@ async function clickFirstThumbnail() {
     if (vid) {
       console.log("Clicking first thumbnail...");
       vid.click();
-
-      // No longer calling processVideoPage() here
-      // The message handler will do that after navigation
     } else {
       console.warn("No video thumbnail found");
     }
